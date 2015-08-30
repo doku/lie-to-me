@@ -12,7 +12,7 @@
                 </div>
                 <div class="row">  
                   <div class="col-md-12 col-lg-12">
-                    <youtube-video video-id="tubeVideo"></youtube-video>
+                    <youtube-video video-id="tubeVideo" player-vars="playerVars" class="embed-responsive-item" player-width="'100%'" player-height="'400px'"></youtube-video>
                   </div>
                 </div>
       
@@ -131,7 +131,7 @@
       <ul class="nav nav-tabs nav-stacked col-md-4 col-lg-4 col-sm-6" ng-repeat="post in posts">
         <li>
           <label for='title'>{{ post.title }}</label>
-          <a ui-sref="video({'id': post._id })" tooltip="{{post.urlid}}"><img src="http://img.youtube.com/vi/{{ post.youtube_id }}/default.jpg" ></a>
+          <a ui-sref="video({'id': post._id })" tooltip="{{post.urlid}}"><img src="https://img.youtube.com/vi/{{ post.youtube_id }}/default.jpg" ></a>
           <label for='rating'>Lie Rating {{ post.up_vote.length - post.down_vote.length }}</label>
           <p> -{{ post.username }} on {{post.post_date | date : format: mediumDate }} </p>
         </li>

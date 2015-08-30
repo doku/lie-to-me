@@ -12,11 +12,23 @@ angular.module('workspaceApp')
     
     $scope.videoId = $stateParams.id;
     $scope.page = "home";
+
     if($scope.videoId != null){
       $scope.page = "video";
+      $scope.playerVars = {
+          modestbranding: 0,
+          rel: 0,
+          showinfo:0,
+          autoplay:0
+      };
       $http.get('/api/post/id/' + $scope.videoId).success( function(post){
         $scope.post = post;
         $scope.tubeVideo = post.youtube_id;
+        if(post.youtube_time){
+          $scope.playerVars.start = post.youtube_time;
+        }
+        $scope.playerVars['start'] = 15;
+        
         //console.log(post[0]._id);
         //console.log(post[0].urlid);
         

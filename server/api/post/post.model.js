@@ -11,7 +11,7 @@ var PostSchema = new Schema({
   username: String,
   urlid: String,
   youtube_id: String,
-  youtube_time: String,
+  youtube_time: Number,
   up_vote: [String],
   down_vote: [String]
   
