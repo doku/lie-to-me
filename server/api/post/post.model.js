@@ -8,7 +8,10 @@ var PostSchema = new Schema({
   post_date: Date, 
   update_date: Date,
   user: String,
+  username: String,
   urlid: String,
+  youtube_id: String,
+  youtube_time: String,
   up_vote: [String],
   down_vote: [String]
   

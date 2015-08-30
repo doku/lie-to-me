@@ -3,10 +3,12 @@
 
 
 angular.module('workspaceApp')
-  .controller('MainCtrl', function ($scope, $http, Auth, $stateParams) {
+  .controller('MainCtrl', function ($scope, $http, Auth, $stateParams, $state, $timeout) {
     $scope.awesomeThings = [];
     $scope.isLoggedIn = Auth.isLoggedIn;
     $scope.user = Auth.getCurrentUser();
+    $scope.isAdmin = Auth.isAdmin();
+    //console.log(Auth.isAdmin());
     
     $scope.videoId = $stateParams.id;
     $scope.page = "home";
@@ -14,7 +16,7 @@ angular.module('workspaceApp')
       $scope.page = "video";
       $http.get('/api/post/id/' + $scope.videoId).success( function(post){
         $scope.post = post;
-        $scope.tubeVideo = post.urlid;
+        $scope.tubeVideo = post.youtube_id;
         //console.log(post[0]._id);
         //console.log(post[0].urlid);
         
@@ -32,9 +34,13 @@ angular.module('workspaceApp')
       //$http.get('/api/post')
       console.log(post_id);
       $http.get('/api/post/id/' + post_id).success(function(e){
-        if(e.user == Auth.getCurrentUser()._id){
+        if(e.user == Auth.getCurrentUser()._id || Auth.isAdmin()){
           $http.delete('/api/post/id/' + e._id).success(function(e){
             $scope.$parent.deletedPost = true;
+            $timeout(function(){
+              $state.go('main');
+            },2000);
+            
             //console.log("post deleted");
           
           })
@@ -52,7 +58,7 @@ angular.module('workspaceApp')
         a.up_vote.push($scope.user._id);
         $http.put('/api/post/id/' + post_id, a).success(function(b){
           $scope.post.up_vote = b.up_vote;
-          console.log("Post upvoted " + b.up_vote);          
+          console.log("Post upvoted " + b.up_vote);   
         })
       })
     };
@@ -93,7 +99,7 @@ angular.module('workspaceApp')
     };
   });
   
-angular.module('workspaceApp').controller('PostCtrl', ['$scope', '$http', 'Auth',  function($scope, $http, Auth){
+angular.module('workspaceApp').controller('PostCtrl', function($scope, $http, Auth, $state, $timeout, youtubeEmbedUtils){
   
   $scope.isLoggedIn = Auth.isLoggedIn; 
   
@@ -103,17 +109,32 @@ angular.module('workspaceApp').controller('PostCtrl', ['$scope', '$http', 'Auth'
       
       //$http.get('/api/vid/' + id)
     if(Auth.isLoggedIn){
-      $http.post('/api/post', {'title': $scope.title, 'user': user._id, 'urlid': $scope.urlid} ).success(function(a){  
+      
+      var youtube_id = youtubeEmbedUtils.getIdFromURL($scope.urlid);
+      var youtube_time = youtubeEmbedUtils.getTimeFromURL($scope.urlid);
+      if(youtube_id != ""){
+        $http.post('/api/post', {'title': $scope.title, 'user': user._id, 'urlid': $scope.urlid, 'username': user.name, 'youtube_id': youtube_id, 'youtube_time': youtube_time} ).success(function(a){  
+          
+          $scope.$parent.post_success = true;
+          // disable the button
+          $timeout(function(){
+          //console.log(a._id);
+          
+            $state.go('video', {'id': a._id });
+            
+          }, 1500);
+          
+        });
+      }else{
+        $scope.$parent.youtube_id_fail = true;
         
-        $scope.$parent.post_success = true;
-        
-      });
+      }
     }
     //return "";
   };
   
 
-}]);
+});
 
 angular.module('workspaceApp')
   .controller('CommentCtrl', ['$scope', '$http', 'Auth', '$stateParams', function($scope, $http, Auth, $stateParams){
@@ -133,7 +154,7 @@ angular.module('workspaceApp')
       if(Auth.isLoggedIn){
       //console.log('testessssss');
       //console.log($scope.comments);
-      $http.post('/api/comment', {'user_id': user._id, 'user_name': user.name , 'comment': $scope.comment, 'post_id': $stateParams.id , 'up_vote': [user._id]}).success(function(a){
+      $http.post('/api/comment', {'user_id': user._id, 'user_name': user.name , 'comment': $scope.comment, 'post_id': $stateParams.id }).success(function(a){
           $scope.$parent.comment_success = true;
           $scope.comments.unshift(a);
           //console.log(a.up_vote);

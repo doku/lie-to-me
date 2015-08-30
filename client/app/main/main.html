@@ -1,74 +1,104 @@
 <div ng-include="'components/navbar/navbar.html'"></div>
 
-<header class="hero-unit" id="banner">
+
+<div ng-show="page === 'video'" ng-controller="MainCtrl">
+        <header class="hero-unit" id="banner">
+              <div id="ViewVideo" class="container ng-scope">
+                <div class="row">
+                  <div class="col-md-12">
+                    <h2>{{ post.title }} </h2>
+                    <hr>
+                  </div>
+                </div>
+                <div class="row">  
+                  <div class="col-md-12 col-lg-12">
+                    <youtube-video video-id="tubeVideo"></youtube-video>
+                  </div>
+                </div>
+      
+              </div>
+        </header>
   <div class="container">
-    <h1>'Allo, 'Allo!</h1>
-    <p class="lead">Kick-start your next web app with Angular Fullstack</p>
-    <img src="assets/images/yeoman.png" alt="I'm Yeoman">
-  </div>
-</header>
-
-
-
-<div class="container" ng-show="page === 'video'">
-  <div class="row">
-    <div class="col-lg-12">
-      
-      <div class="container ng-scope" ng-hide="isLoggedIn()">
-        <h2>Please Log in to post comments</h2>
-        <a href="/login">/login</a>  
+    <div class="row">
+      <br>
+      <div class="col-md-2">
+        <div class="row">
+          <button class="btn btn-default btn-success" type="submit" ng-click="up_vote_post(post._id)" >{{ post.up_vote.length }} Vote Lier</button>
+        </div>
+        <div class="row">
+          <button class="btn btn-success" ng-click="down_vote_post(post._id)">{{ post.down_vote.length }} Vote Honest</button> 
+        </div>
       </div>
-      
-      
-      <div id="ViewVideo" class="container ng-scope" ng-controller="MainCtrl">
-        {{ post.up_vote.length }} <a href="#" ng-click="up_vote_post(post._id)" >up</a> | 
-        {{ post.down_vote.length }} <a href="#" ng-click="down_vote_post(post._id)">down</a>
-        <p>{{ post.up_vote}} : {{ post.down_vote }} :: -- Placeholder {{ post.urlid}} - {{ videoId }}</p>
-        <youtube-video video-url="tubeVideo"></youtube-video>
-        <button ng-show="isLoggedIn() || post.user == user._id" class="btn btn-default" ng-click="deletePost( post._id )">Delete</button>
+      <div class="col-md-7" style="text-align: center;">
+        <p>Submitted on {{ post.post_date | date: format: mediumDate }} by {{ post.username }} </p>
         
-        <h2 ng-show="deletedPost">Post has been deleted!</h2>
-        
-
-      
-      
-
-       
       </div>
-      
-      
+      <div class="col-md-2">
+        <button ng-show="isLoggedIn() && (post.user == user._id || isAdmin)" class="btn btn-default" ng-click="deletePost( post._id )">Delete</button>
+      </div>
     </div>
+    <div class="row">
+        <h2 ng-show="deletedPost">Post has been deleted!</h2>
+    </div>
+    <hr>
   </div>
-  <div class="row" ng-controller="CommentCtrl">
-    
-    
-      <div id="CommentForm" class="container ng-scope col-lg-12" ng-show="isLoggedIn()">
+  
+  
+  <div class="container ng-scope" ng-controller="CommentCtrl">
+    <div class="row" ng-hide="isLoggedIn()">
+      <div class="col-lg-12">
+        
+        <div class="ng-scope">
+          <h2>Please Log in to post comments</h2>
+          <a href="/login">/login</a>  
+        </div>
+      </div>
+    </div>
+    <div class="row" ng-show="isLoggedIn()">
+      
+      <div id="CommentForm" class="ng-scope">
         <form class="ng-pristine ng-invalid ng-invalid-required" novalidate="" name="comment_form">
-          <div class="form-group">
-            <input id="comment_input" class="form-control ng-pristine ng-untouched ng-invalid ng-invalid-required" required="" placeholder="Comment..." ng-model="comment">
+          <div class="form-group col-md-11" >
+            <textarea id="comment_input" class="form-control ng-pristine ng-untouched ng-invalid ng-invalid-required" required="" ng-model="comment">
+            Comment....
+            </textarea>  
           </div>
 
-          <div class="form-buttons">
+          <div class="form-buttons col-md-1">
             <button class="btn btn-success" ng-disabled="comment_form.$invalid" ng-click="submit_comment()" type="submit">Submit</button>
           </div>
         </form>
       </div>
-      
-    
-    <div class="col-lg-12" ng-repeat="com in comments track by $index">
-      <div class="col-1g-3">
-        <a ng-click="up_vote_comment($index)">{{ com.up_vote.length }} up</a> | 
-        <a ng-click="down_vote_comment($index)">{{ com.down_vote.length }} down</a> | {{com.up_vote}}
-      </div>
-      <div class="col-1g-9">
-        <p id="comment"> {{com.comment}} -- {{com.user_name}}</p><a href="#" ng-click="delete_comment($index)">delete</a>
-      </div>
-    
     </div>
-  </div>
-  
-</div>
+    <hr>
+    <div class="row" ng-repeat="com in comments track by $index">
+      <!--
+        <div class="col-md-1">
+          <div class="row">
+            <a href="#" class="btn" ng-click="up_vote_comment($index)">{{ com.up_vote.length }} up</a> 
+          </div>
+          <div class="row">
+            <a href="#" class="btn" ng-click="down_vote_comment($index)">{{ com.down_vote.length }} down</a>
+          </div>
+        </div>
+        -->
+        <div class="col-md-12">
+          <div class="row">
+            <p> {{com.comment}}</p>
+          </div>
+          <div class="row">
+            -- commented on {{ com.post_date | date : format : mediumDate }} by {{ com.user_name}}  | {{ com.up_vote.length }} likes - {{ com.down_vote.length }} dislikes | 
+            <a href="#" class="btn btn-default" ng-click="up_vote_comment($index)">like</a>
+            <a href="#" class="btn btn-default" ng-click="down_vote_comment($index)">dislike</a>
+            <a ng-show="com.user_id == user._id" href="#" ng-click="delete_comment($index)">delete</a>
+          </div>
+        </div>
+        <br>
+        <hr>
 
+    </div>    
+  </div>
+</div>
 
   
   
@@ -76,15 +106,34 @@
 
 
 <div class="container" ng-show="page === 'home'">
+  
+          <header class="hero-unit" id="banner">
+              <div class="container ng-scope">
+                <div class="row">
+                  <div class="col-md-12">
+                    <h2>Post youtube videos and we'll vote on their honesty or acting</h2>
+                    <hr>
+                  </div>
+                </div>
+                <div class="row">  
+                  <div class="col-md-12 col-lg-12">
+
+                  </div>
+                </div>
+      
+              </div>
+        </header>
+  
+  
   <div class="row">
     <div class="col-lg-12">
-      <h1 class="page-header">Videos:</h1>
+      <h2 class="page-header">Videos:</h1>
       <ul class="nav nav-tabs nav-stacked col-md-4 col-lg-4 col-sm-6" ng-repeat="post in posts">
         <li>
           <label for='title'>{{ post.title }}</label>
-          <a ui-sref="video({'id': post._id })" tooltip="">{{post.urlid}}</a>
-          <label for='user'>{{ post.username }}</label>
-            
+          <a ui-sref="video({'id': post._id })" tooltip="{{post.urlid}}"><img src="http://img.youtube.com/vi/{{ post.youtube_id }}/default.jpg" ></a>
+          <label for='rating'>Lie Rating {{ post.up_vote.length - post.down_vote.length }}</label>
+          <p> -{{ post.username }} on {{post.post_date | date : format: mediumDate }} </p>
         </li>
       </ul>
     </div>
@@ -93,8 +142,6 @@
 
 <footer class="footer">
   <div class="container">
-      <p>Angular Fullstack v2.1.1 |
-        <a href="https://twitter.com/tyhenkel">@tyhenkel</a> |
-         <a href="https://github.com/DaftMonk/generator-angular-fullstack/issues?state=open">Issues</a></p>
+      <p>Angular Fullstack v2.1.1</p>
   </div>
 </footer>
