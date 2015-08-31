@@ -27,7 +27,7 @@ angular.module('workspaceApp')
         if(post.youtube_time){
           $scope.playerVars.start = post.youtube_time;
         }
-        $scope.playerVars['start'] = 15;
+        //$scope.playerVars['start'] = 15;
         
         //console.log(post[0]._id);
         //console.log(post[0].urlid);

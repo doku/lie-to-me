@@ -32,6 +32,27 @@ exports.post = function(req, res){
 };
 
 exports.list = function(req, res){
+  
+  //MyModel.find(query, fields, { skip: 10, limit: 5 }, function(err, results) { ... });
+  
+  /*
+  Event.find()
+    .select('name')
+    .limit(perPage)
+    .skip(perPage * page)
+    .sort({
+        name: 'asc'
+    })
+    .exec(function(err, events) {
+        Event.count().exec(function(err, count) {
+            res.render('events', {
+                events: events,
+                page: page,
+                pages: count / perPage
+            })
+        })
+    })
+    */
     
     Post.find(function (err, post){
         if(err) { return handleError(res, err); }
@@ -52,6 +73,44 @@ exports.delete_post = function(req, res){
         });
       });
     
+};
+
+exports.get_page = function(req, res){
+  var per_page = 50;
+  var page = (req.params.id-1)*per_page;
+  
+  Post.find().limit(per_page).skip(page).sort({post_date: '-1'})
+      .exec(function(err, post){
+        //console.log(post);
+        if(err) { return handleError(res, err); }
+        return res.status(200).json(post);
+        
+      })
+  
+  //MyModel.find(query, fields, { skip: 10, limit: 5 }, function(err, results) { ... });
+  
+  /*
+  Event.find()
+    .select('name')
+    .limit(perPage)
+    .skip(perPage * page)
+    .sort({
+        name: 'asc'
+    })
+    .exec(function(err, events) {
+        Event.count().exec(function(err, count) {
+            res.render('events', {
+                events: events,
+                page: page,
+                pages: count / perPage
+            })
+        })
+    })
+    */
+  
+  
+  
+  
 };
 
 exports.get_item = function(req, res){

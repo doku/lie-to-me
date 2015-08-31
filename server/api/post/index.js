@@ -7,7 +7,7 @@ var router = express.Router();
 
 router.get('/', controller.list);
 router.post('/', controller.post);
-router.get('/:id', controller.get_item);
+router.get('/:id', controller.get_page);
 router.delete('/id/:id', controller.delete_post);
 router.get('/id/:id', controller.get_item_by_id);
 router.put('/id/:id', controller.vote);
